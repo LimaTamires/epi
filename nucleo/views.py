@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from nucleo.models import Colaborador
+from nucleo.models import Colaborador, Setor
 
 def home(req):
     colaboradores = Colaborador.objects.all()
@@ -8,19 +8,33 @@ def home(req):
     })
 
 def tela_criar(req):
-    return render(req, 'nucleo/forms/criar.html')
+    if req.method == 'GET':
+        return render(req, 'nucleo/forms/criar.html')
+    elif req.method == 'POST':
+        nome = req.POST.get('nome')
+        cpf = req.POST.get('cpf')
 
-def salvar(req):
-    nome = req.POST.get('nome')
+        colaborador = Colaborador(
+            nome=nome,
+            cpf=cpf,
+        )
 
-    if nome is None:
-        return redirect('nucleo-criar')
+        colaborador.save()
 
-    telefone = req.POST.get('telefone')
+        return redirect('nucleo-inicial')
 
-    colaborador = Colaborador.objects.create(
-        nome=nome,
-        telefone=telefone
-    )
-    return redirect('nucleo-inicial')
+def setor(req):
+    if req.method=='GET':
+        return render(req, 'nucleo/forms/setor.html')
+    elif req.method=='POST':
+        setor = req.POST.get('setor')
 
+        setor=Setor(
+            nome = setor,
+        )
+
+        setor.save()
+
+        return redirect('nucleo-inicial')
+
+   
